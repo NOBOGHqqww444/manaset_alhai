@@ -1,37 +1,44 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'posts_screen.dart';
+import 'main.dart';
 
-void main() {
-  runApp(const SawtAlHayApp());
-}
-
-class SawtAlHayApp extends StatelessWidget {
-  const SawtAlHayApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.teal, // الحفاظ على اللون الأساسي
-        useMaterial3: true,
-      ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // استمع لتغييرات اللون
+    AppColors.addListener(_refresh);
+  }
+
+  @override
+  void dispose() {
+    // توقف عن الاستماع عند إغلاق الصفحة
+    AppColors.removeListener(_refresh);
+    super.dispose();
+  }
+
+  void _refresh() {
+    setState(() {}); // أعد بناء الصفحة
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final currentColor = AppColors.primaryColor;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('صوت الحي'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: currentColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -47,11 +54,10 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 30),
-            // رأس الصفحة
             Icon(
               Icons.handshake_outlined,
               size: 100,
-              color: Theme.of(context).primaryColor,
+              color: currentColor,
             ),
             const SizedBox(height: 20),
             Text(
@@ -59,7 +65,7 @@ class HomePage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
+                color: currentColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -78,19 +84,15 @@ class HomePage extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 30),
-
-            // زر الإجراء الرئيسي
             ElevatedButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('زر ابدأ الآن تم الضغط عليه!'),
-                    backgroundColor: Colors.green,
-                  ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PostsScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: currentColor,
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -102,14 +104,12 @@ class HomePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 50),
-
-            // قسم الاقتراحات النشطة
             Text(
               'آخر الاقتراحات النشطة 🔥',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
+                color: currentColor,
               ),
             ),
             const SizedBox(height: 10),
@@ -117,17 +117,17 @@ class HomePage extends StatelessWidget {
               child: ListView(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.lightbulb_outline, color: Theme.of(context).primaryColor),
+                    leading: Icon(Icons.lightbulb_outline, color: currentColor),
                     title: const Text('تركيب إنارة جديدة في شارع النخيل'),
                     subtitle: const Text('عدد المؤيدين: 42'),
                   ),
                   ListTile(
-                    leading: Icon(Icons.park, color: Theme.of(context).primaryColor),
+                    leading: Icon(Icons.park, color: currentColor),
                     title: const Text('إعادة تأهيل الحديقة العامة في الحي الشمالي'),
                     subtitle: const Text('عدد المؤيدين: 68'),
                   ),
                   ListTile(
-                    leading: Icon(Icons.sports_soccer, color: Theme.of(context).primaryColor),
+                    leading: Icon(Icons.sports_soccer, color: currentColor),
                     title: const Text('إنشاء ملعب كرة قدم في المنطقة الجنوبية'),
                     subtitle: const Text('عدد المؤيدين: 95'),
                   ),
@@ -153,7 +153,7 @@ class HomePage extends StatelessWidget {
             },
             child: const Text('إلغاء'),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pushReplacement(
                 context,
@@ -161,8 +161,8 @@ class HomePage extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.red,
-    ),
+              backgroundColor: Colors.red,
+            ),
             child: const Text(
               'تسجيل الخروج',
               style: TextStyle(color: Colors.white),
